@@ -1,0 +1,45 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local virtual environments
+venv/
+.venv/
+
+# Frontend build/install artifacts
+web/node_modules/
+web/dist/
+web/.vite/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage / test output
+.coverage
+htmlcov/
+coverage/
+
+# Runtime persistence artifacts
+data/portfolio_history.csv
+data/
+
+# Internal working notes and private design material
+BUG_REPORT.md
+Internal_documentation/
+.cursor/
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# OS / misc
+Thumbs.db
