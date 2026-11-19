@@ -1,0 +1,103 @@
+/* Quant-terminal-inspired application styling with dashboard-specific
+ * extensions for the live LED and portfolio controls. */
+
+:root {
+  --bg: #0a0e14;
+  --panel: #11151f;
+  --panel-2: #161b27;
+  --border: #1f2937;
+  --border-soft: #1a2030;
+  --text: #d1d5db;
+  --text-dim: #6b7484;
+  --text-muted: #4a5363;
+  --accent: #22d3ee;
+  --accent-dim: #0e7490;
+  --green: #4ade80;
+  --green-dim: #166534;
+  --red: #f87171;
+  --red-dim: #7f1d1d;
+  --amber: #facc15;
+  --gray: #6b7484;
+  --chart-grid: rgba(34, 211, 238, 0.28);
+  --chart-grid-dash: 4 6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+.mono,
+.num {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.pos {
+  color: var(--green);
+}
+.neg {
+  color: var(--red);
+}
+
+/* ---------------------------------------------------------------------------
+ * App shell
+ * ------------------------------------------------------------------------- */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.route {
+  flex: 1;
+  padding: 18px;
+}
+
+.placeholder {
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 28px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 4px;
+}
+
+.placeholder h2 {
+  margin: 0 0 12px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.placeholder p {
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.placeholder code {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  background: var(--panel-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
