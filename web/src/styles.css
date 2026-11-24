@@ -101,6 +101,72 @@ select {
   border-radius: 2px;
 }
 
+/* Treemap */
+.treemap {
+  padding: 8px;
+  background: var(--panel-2);
+  position: relative;
+}
+
+.treemap-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.tm-cell {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 8px 10px;
+  overflow: hidden;
+  cursor: crosshair;
+  transition: filter 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--panel-2);
+  color: #e8eef5;
+  text-align: left;
+}
+
+.tm-cell:hover {
+  filter: brightness(1.15);
+  border-color: rgba(255, 255, 255, 0.18);
+  z-index: 3;
+}
+
+.tm-cell-selected {
+  outline: 1.5px solid var(--accent);
+  z-index: 4;
+}
+
+.tm-ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.tm-weight {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.tm-pnl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.tm-cell-sm .tm-pnl {
+  font-size: 11px;
+}
+
 /* Allocation grid */
 .alloc-grid {
   display: grid;
