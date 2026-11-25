@@ -576,3 +576,145 @@ select {
   text-align: right;
 }
 
+/* Range pills */
+.range-pills {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.range-pills button {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border-soft);
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 4px 9px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.range-pills button:last-child {
+  border-right: none;
+}
+
+.range-pills button.active {
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent);
+}
+
+.range-pills.small button {
+  padding: 3px 7px;
+  font-size: 9px;
+}
+
+/* Trend card */
+.trend-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0;
+}
+
+.trend-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.trend-h h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+.trend-badge {
+  padding: 1px 6px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent);
+  border-radius: 1px;
+  font-size: 10px;
+}
+
+.trend-spacer {
+  flex: 1;
+}
+
+.trend-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trend-chart-wrap {
+  position: relative;
+  padding: 12px;
+  min-height: 268px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trend-chart-wrap svg {
+  width: 100%;
+  height: auto;
+  max-height: 288px;
+}
+
+.trend-empty {
+  padding: 60px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-align: center;
+}
+
+.trend-footnote {
+  margin: 0;
+  padding: 0 12px 12px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.trend-tooltip {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: rgba(8, 11, 17, 0.95);
+  border: 1px solid var(--accent-dim);
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.trend-tooltip-date {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.trend-tooltip-row {
+  display: flex;
+  gap: 12px;
+}
+
+.trend-tooltip-label {
+  color: var(--text-muted);
+}
+
+.trend-tooltip-value {
+  color: var(--accent);
+}
+
