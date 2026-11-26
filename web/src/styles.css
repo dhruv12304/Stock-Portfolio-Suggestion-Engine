@@ -1035,3 +1035,138 @@ select {
   color: var(--accent);
 }
 
+/* Risk grid */
+.risk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 14px;
+}
+
+.risk-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.risk-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.risk-h h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+.risk-badge {
+  padding: 1px 6px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent);
+  border-radius: 1px;
+  font-size: 10px;
+}
+
+.risk-spacer {
+  flex: 1;
+}
+
+.risk-body {
+  padding: 14px;
+}
+
+.risk-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.risk-scatter-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.risk-scatter-footnote {
+  margin: 0;
+  padding: 0 2px 2px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.risk-scatter-footnote a {
+  color: var(--accent);
+  text-decoration: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.risk-scatter-footnote a:hover {
+  text-decoration: underline;
+}
+
+.sharpe-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.sharpe-gauge {
+  margin-top: 16px;
+  height: 6px;
+  background: var(--panel-2);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sharpe-gauge-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, var(--red), var(--amber), var(--green));
+  transition: width 0.2s;
+}
+
+.sharpe-meta {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sharpe-meta dt {
+  color: var(--text-muted);
+  display: inline-block;
+  width: 64px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.sharpe-meta dd {
+  display: inline;
+  margin: 0;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
