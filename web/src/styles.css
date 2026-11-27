@@ -448,6 +448,30 @@ select {
 }
 
 /* ---------------------------------------------------------------------------
+ * Banners
+ * ------------------------------------------------------------------------- */
+.banner {
+  padding: 8px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.banner-info {
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+}
+
+.banner-warn {
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid var(--red-dim);
+  color: var(--red);
+}
+
+/* ---------------------------------------------------------------------------
  * Setup
  * ------------------------------------------------------------------------- */
 .setup-wrap {
@@ -764,6 +788,119 @@ select {
   color: var(--accent);
 }
 
+/* ---------------------------------------------------------------------------
+ * Dashboard
+ * ------------------------------------------------------------------------- */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* KPI strip */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.kpi {
+  padding: 10px 14px;
+  border-right: 1px solid var(--border-soft);
+}
+
+.kpi:last-child {
+  border-right: none;
+}
+
+.kpi-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.kpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  color: #e8eef5;
+  letter-spacing: -0.02em;
+}
+
+.kpi-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.panel-h {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.panel-badge {
+  padding: 1px 6px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent);
+  border-radius: 1px;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
+.panel-spacer {
+  flex: 1;
+}
+
+.panel-meta {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.panel-b {
+  padding: 12px;
+}
+
+.panel-b-tight {
+  padding: 8px;
+}
+
+/* Hero panel — more width for allocation + holdings table */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.42fr);
+  gap: 14px;
+}
+
+.treemap-slot {
+  width: 100%;
+  min-height: 240px;
+  aspect-ratio: 534 / 344;
+  overflow: hidden;
+}
+
 /* Treemap */
 .treemap {
   padding: 8px;
@@ -891,6 +1028,78 @@ select {
 .legend-value {
   color: var(--text-muted);
   text-align: right;
+}
+
+/* Holdings mini-table */
+.holdings-table-wrap {
+  border-top: 1px solid var(--border-soft);
+}
+
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.holdings-table th {
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.holdings-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
+}
+
+.holdings-table tr {
+  cursor: pointer;
+}
+
+.holdings-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.holdings-table tr.selected td {
+  background: rgba(34, 211, 238, 0.06);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.holdings-table tr.fallback td {
+  opacity: 0.65;
+}
+
+.holdings-table .r {
+  text-align: right;
+}
+
+.holdings-table .tk {
+  color: #e8eef5;
+  font-weight: 600;
+}
+
+.ticker-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fallback-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  color: var(--amber);
+  border-radius: 1px;
+  letter-spacing: 0.06em;
 }
 
 /* Range pills */
