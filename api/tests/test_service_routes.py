@@ -224,3 +224,142 @@ def test_get_portfolio_404_for_unknown_id(app_and_client):
     assert r.status_code == 404
 
 
+def test_stream_sends_snapshot_and_tick(app_and_client):
+    """The stream must deliver an initial snapshot AND at least one
+    polling-driven update within a reasonable window."""
+
+    _, client = app_and_client
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 25000, "strategies": ["Growth Investing"]},
+    ).json()["portfolio_id"]
+
+    with client.websocket_connect(f"/api/v1/portfolios/{portfolio_id}/stream") as ws:
+        first = json.loads(ws.receive_text())
+        assert first["type"] == "valuation"
+        assert first["valuation"]["portfolio_id"] == portfolio_id
+
+        # The polling loop should emit at least one more valuation frame
+        # quickly (poll cadence is 0.1s in the fixture). Skip pings if any.
+        seen_tick = False
+        for _ in range(30):
+            frame = json.loads(ws.receive_text())
+            if frame["type"] == "valuation":
+                seen_tick = True
+                assert frame["valuation"]["portfolio_id"] == portfolio_id
+                break
+        assert seen_tick, "did not receive a tick-driven valuation frame"
+
+
+def test_stream_rejects_unknown_portfolio(app_and_client):
+    _, client = app_and_client
+    with client.websocket_connect("/api/v1/portfolios/missing/stream") as ws:
+        frame = json.loads(ws.receive_text())
+        assert frame["type"] == "error"
+        assert "portfolio_not_found" in frame["message"]
+
+
+@pytest.mark.asyncio
+async def test_stream_disconnect_during_send_does_not_log_crash(monkeypatch, caplog):
+    class FakeStream:
+        def __init__(self):
+            self.unsubscribed: list[str] = []
+
+        async def subscribe(self, subscriber_id: str, tickers: list[str]):
+            queue: asyncio.Queue[dict[str, Quote]] = asyncio.Queue()
+            await queue.put({"NVDA": Quote("NVDA", 950.0, "live", datetime.now(timezone.utc))})
+            return queue
+
+        async def unsubscribe(self, subscriber_id: str):
+            self.unsubscribed.append(subscriber_id)
+
+    class FakeWebSocket:
+        def __init__(self, stream):
+            self.app = SimpleNamespace(state=SimpleNamespace(market_stream=stream))
+            self.sent_count = 0
+            self.closed = False
+
+        async def accept(self):
+            return None
+
+        async def send_text(self, _payload: str):
+            self.sent_count += 1
+            if self.sent_count >= 2:
+                self.closed = True
+                raise RuntimeError(
+                    "Unexpected ASGI message 'websocket.send', after sending "
+                    "'websocket.close' or response already completed."
+                )
+
+        async def receive_text(self):
+            raise WebSocketDisconnect()
+
+        async def close(self, code: int = 1000):
+            self.closed = True
+            return None
+
+    def make_valuation(portfolio_id: str) -> schemas.ValuationOut:
+        return schemas.ValuationOut(
+            portfolio_id=portfolio_id,
+            name="Demo",
+            built_at=datetime.now(timezone.utc).isoformat(),
+            investment_amount=25000.0,
+            strategies=["Growth Investing"],
+            strategy_weights=[1.0],
+            rows=[
+                schemas.HoldingRowOut(
+                    ticker="NVDA",
+                    name="NVIDIA Corp.",
+                    weight=1.0,
+                    shares=10,
+                    allocated=9500.0,
+                    initial_price=950.0,
+                    current_price=950.0,
+                    actual_cost=9500.0,
+                    current_value=9500.0,
+                    unrealized_pnl=0.0,
+                    unrealized_pnl_pct=0.0,
+                    quote_source="live",
+                    quote_as_of=datetime.now(timezone.utc).isoformat(),
+                    sector="Technology",
+                    is_etf=False,
+                )
+            ],
+            summary=schemas.SummaryOut(
+                investment_amount=25000.0,
+                total_invested=9500.0,
+                leftover_cash=15500.0,
+                current_portfolio_value=9500.0,
+                total_portfolio_value=25000.0,
+                unrealized_pnl=0.0,
+                unrealized_pnl_pct=0.0,
+            ),
+            status=schemas.MarketDataStatusOut(
+                as_of=datetime.now(timezone.utc).isoformat(),
+                any_fallback=False,
+                any_unavailable=False,
+                missing=[],
+            ),
+            selection_details=[],
+        )
+
+    fake_stream = FakeStream()
+    fake_socket = FakeWebSocket(fake_stream)
+
+    monkeypatch.setattr(stream_routes.orchestrator, "get_portfolio", lambda _: make_valuation("demo"))
+    monkeypatch.setattr(
+        stream_routes.orchestrator,
+        "revalue_portfolio_from_quotes",
+        lambda _portfolio_id, _quotes: make_valuation("demo"),
+    )
+
+    caplog.set_level(logging.WARNING)
+
+    await stream_routes.portfolio_stream(fake_socket, "demo")
+
+    assert fake_socket.closed
+    assert len(fake_stream.unsubscribed) == 1
+    assert not any(
+        "WebSocket loop crashed for demo" in record.getMessage()
+        for record in caplog.records
+    )
