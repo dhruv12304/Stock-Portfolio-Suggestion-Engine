@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      PORTFOLIO_POLL_SECONDS: "5"
+      PORTFOLIO_CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173,http://localhost"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
