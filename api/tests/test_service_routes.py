@@ -224,6 +224,101 @@ def test_get_portfolio_404_for_unknown_id(app_and_client):
     assert r.status_code == 404
 
 
+# ---------------------------------------------------------------------------
+# History + risk
+# ---------------------------------------------------------------------------
+def test_history_endpoint_supports_1mo(app_and_client):
+    _, client = app_and_client
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 10000, "strategies": ["Index Investing"]},
+    ).json()["portfolio_id"]
+
+    r = client.get(f"/api/v1/portfolios/{portfolio_id}/history?period=1mo")
+    assert r.status_code == 200
+    assert len(r.json()["points"]) > 0
+    assert r.json()["source"] == "backcast"
+
+
+def test_history_rejects_unsupported_period(app_and_client):
+    _, client = app_and_client
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 10000, "strategies": ["Index Investing"]},
+    ).json()["portfolio_id"]
+    r = client.get(f"/api/v1/portfolios/{portfolio_id}/history?period=10y")
+    assert r.status_code == 400
+
+
+def test_history_5d_prefers_recorded_value_history(app_and_client):
+    _, client = app_and_client
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 10000, "strategies": ["Index Investing"]},
+    ).json()["portfolio_id"]
+
+    storage.upsert_value_history(portfolio_id, date="2026-05-12", value=10050.0)
+    storage.upsert_value_history(portfolio_id, date="2026-05-13", value=10100.0)
+
+    r = client.get(f"/api/v1/portfolios/{portfolio_id}/history?period=5d")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["source"] == "recorded"
+    assert len(body["points"]) >= 2
+    assert any(
+        point["date"] == "2026-05-12" and point["value"] == pytest.approx(10050.0)
+        for point in body["points"]
+    )
+    assert any(
+        point["date"] == "2026-05-13" and point["value"] == pytest.approx(10100.0)
+        for point in body["points"]
+    )
+
+
+def test_risk_endpoint_returns_sharpe_and_correlation(app_and_client):
+    _, client = app_and_client
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 25000, "strategies": ["Growth Investing"]},
+    ).json()["portfolio_id"]
+    r = client.get(f"/api/v1/portfolios/{portfolio_id}/risk?period=1y")
+    assert r.status_code == 200
+    body = r.json()
+    assert "sharpe" in body
+    # synthetic series has 260 samples -> 3m / 6m / 1y / 2y all reportable.
+    assert body["sharpe"]["1y"]["sharpe"] is not None
+    assert body["correlation_matrix"]
+    assert body["risk_free_rate"] == pytest.approx(0.05)
+
+
+def test_risk_1mo_succeeds_with_typical_trading_day_count(app_and_client, monkeypatch):
+    """1M Yahoo history is ~20-22 rows; threshold must not require 30."""
+    from api.service import orchestrator
+    from api.market_data import MarketDataStatus
+
+    _, client = app_and_client
+
+    def short_history(tickers: Iterable[str], period: str):
+        n = 22
+        dates = pd.date_range("2024-01-01", periods=n, freq="B")
+        matrix = pd.DataFrame(
+            {t.upper(): [100.0 * (1.001**i) for i in range(n)] for t in tickers},
+            index=dates,
+        )
+        return matrix, MarketDataStatus(quotes={}, as_of=datetime.now(timezone.utc))
+
+    monkeypatch.setattr(orchestrator, "fetch_history", short_history)
+
+    portfolio_id = client.post(
+        "/api/v1/portfolios/build",
+        json={"investment_amount": 25000, "strategies": ["Growth Investing"]},
+    ).json()["portfolio_id"]
+    r = client.get(f"/api/v1/portfolios/{portfolio_id}/risk?period=1mo")
+    assert r.status_code == 200
+    body = r.json()
+    assert body.get("note") != "insufficient_history"
+    assert len(body["tickers"]) >= 1
+    assert body["correlation_matrix"]
 def test_stream_sends_snapshot_and_tick(app_and_client):
     """The stream must deliver an initial snapshot AND at least one
     polling-driven update within a reasonable window."""
